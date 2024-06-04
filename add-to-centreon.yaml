@@ -1,9 +1,6 @@
 ---
 - name: Centreon API authentication
   hosts: testing-machine
-  vars_files:
-    - url.yml
-    - creds.yml
   tasks:
     - name: Authentication
       uri:
