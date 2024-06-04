@@ -1,6 +1,6 @@
 ---
 - name: Centreon API authentication
-  hosts: testing-machine
+  hosts: all
   tasks:
     - name: Authentication
       uri:
