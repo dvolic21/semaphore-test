@@ -1,3 +1,0 @@
-centreon_auth_url: "https://centreon.versoaltima.com/centreon/api/index.php?action=authenticate"
-centreon_api_url: "https://centreon.versoaltima.com/centreon/api/index.php?action=action&object=centreon_clapi"
-
