@@ -134,7 +134,3 @@
       delegate_to: localhost
       with_items:
         - "{{ ansible_mounts }}"
-
-    - name: Print poller messages
-      debug:
-        msg: "{{ output.stdout_lines }}"
