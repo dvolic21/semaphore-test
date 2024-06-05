@@ -1,0 +1,8 @@
+---
+- name: Check connection to remote machines
+  hosts: testing-machine
+  gather_facts: no
+
+  tasks:
+    - name: Pinging remote machine
+      ansible.builtin.ping:
