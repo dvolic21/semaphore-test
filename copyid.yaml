@@ -1,1 +1,26 @@
+---
+- name: Copy SSH key to remote hosts
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ip_password_file: ip_password.txt
 
+  tasks:
+    - name: Check if the IP and password file exists
+      stat:
+        path: "{{ ip_password_file }}"
+      register: ip_password_file_status
+
+    - name: Read IP and password file
+      command: cat {{ ip_password_file }}
+      register: ip_password_content
+
+    - name: Parse IP and password content
+      set_fact:
+        ip_password_pairs: "{{ ip_password_content.stdout_lines | map('split', ' ') | list }}"
+
+    - name: Copy SSH key to remote hosts
+      shell: |
+        sshpass -p "{{ item[1] }}" ssh-copy-id -o StrictHostKeyChecking=no root@{{ item[0] }}
+      with_items: "{{ ip_password_pairs }}"
+      ignore_errors: yes
