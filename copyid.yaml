@@ -1,26 +1,19 @@
 ---
 - name: Copy SSH key to remote hosts
-  hosts: localhost
+  hosts: all
   gather_facts: no
-  vars:
-    ip_password_file: ip_password.txt
 
   tasks:
-    - name: Check if the IP and password file exists
+    - name: Ensure SSH key exists
       stat:
-        path: "{{ ip_password_file }}"
-      register: ip_password_file_status
+        path: ~/.ssh/id_rsa.pub
+      register: ssh_key
 
-    - name: Read IP and password file
-      command: cat {{ ip_password_file }}
-      register: ip_password_content
-
-    - name: Parse IP and password content
-      set_fact:
-        ip_password_pairs: "{{ ip_password_content.stdout_lines | map('split', ' ') | list }}"
+    - name: Generate SSH key if not present
+      command: ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
+      when: not ssh_key.stat.exists
 
     - name: Copy SSH key to remote hosts
       shell: |
-        sshpass -p "{{ item[1] }}" ssh-copy-id -o StrictHostKeyChecking=no root@{{ item[0] }}
-      with_items: "{{ ip_password_pairs }}"
+        sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -o StrictHostKeyChecking=no root@{{ inventory_hostname }}
       ignore_errors: yes
