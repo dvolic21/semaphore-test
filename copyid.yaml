@@ -10,5 +10,5 @@
       register: ssh_key
 
     - name: Copy SSH key to remote hosts
-      shell: /usr/bin/sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -o StrictHostKeyChecking=no root@{{ inventory_hostname }}
+      command: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -o StrictHostKeyChecking=no root@{{ inventory_hostname }}
       ignore_errors: yes
