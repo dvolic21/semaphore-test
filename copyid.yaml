@@ -9,10 +9,6 @@
         path: ~/.ssh/id_rsa.pub
       register: ssh_key
 
-    - name: Generate SSH key if not present
-      command: ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
-      when: not ssh_key.stat.exists
-
     - name: Copy SSH key to remote hosts
       shell: |
         sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -o StrictHostKeyChecking=no root@{{ inventory_hostname }}
