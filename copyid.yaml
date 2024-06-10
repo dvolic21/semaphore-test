@@ -11,5 +11,5 @@
 
     - name: Copy SSH key to remote hosts
       become: yes
-      shell: /usr/bin/sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id root@{{ inventory_hostname }}
+      command: /usr/bin/sshpass -p "Vers0." ssh-copy-id root@10.223.204.254
       delegate_to: localhost
