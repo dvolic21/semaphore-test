@@ -11,7 +11,5 @@
 
     - name: Copy SSH key to remote hosts
       become: yes
-      ansible.builtin.shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ inventory_hostname }}
-      args:
-        executable: /bin/bash
+      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ inventory_hostname }}
       delegate_to: localhost
