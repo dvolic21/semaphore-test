@@ -3,13 +3,13 @@
   hosts: testing-machine
   vars_files:
     - url.yml
-    - creds.yml
+    - creds2.yml
   tasks:
     - name: Authentication
       uri:
          method: POST
          url: "{{ centreon_auth_url }}"
-         body: "username={{ centreon_user }}&password={{ centreon_password  }}"
+         body: "username={{ centreon_user }}&password={{ centreon_password }}"
          follow_redirects: true
       register: login
       delegate_to: localhost
