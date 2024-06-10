@@ -134,8 +134,3 @@
       delegate_to: localhost
       with_items:
         - "{{ ansible_mounts }}"
-
-    - name: Apply configuration to Centreon
-      shell: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
-      delegate_to: lxp-centreon19.srv-lx.vag.local
-      register: output
