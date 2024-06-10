@@ -3,7 +3,7 @@
   hosts: testing-machine
   vars_files:
     - url.yml
-    - creds2.yml
+    - creds.yml
   tasks:
     - name: Authentication
       uri:
