@@ -11,7 +11,7 @@
       delegate_to: localhost
 
     - name: Copy SSH key to remote hosts
-      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ansible_user}}@{{ inventory_hostname }}
+      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ inventory_hostname }}
       delegate_to: localhost
 
 - name: Installation of NRPE and Centreon enrollment
