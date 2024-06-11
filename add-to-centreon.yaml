@@ -1,5 +1,20 @@
 ---
-- name: SSH Key Copying, installation of NRPE and Centreon enrollment
+- name: Copy SSH key to remote hosts
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Ensure SSH key exists
+      stat:
+        path: ~/.ssh/id_rsa.pub
+      register: ssh_key
+
+    - name: Copy SSH key to remote hosts
+      become: yes
+      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ inventory_hostname }}
+      delegate_to: localhost
+
+- name: Installation of NRPE and Centreon enrollment
   hosts: testing-machine
   vars_files:
     - creds.yml
