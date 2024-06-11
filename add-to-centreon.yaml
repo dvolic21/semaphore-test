@@ -16,15 +16,14 @@
 
 - name: Installation of NRPE and Centreon enrollment
   hosts: testing-machine
+  become: yes
   vars_files:
     - creds.yml
   tasks:
     - name: Installing EPEL RPM
-      become: yes
-      become_method: sudo
       command: dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 
-    - name: Installing NRPE      
+    - name: Installing NRPE
       command: dnf install nagios-plugins-disk nagios-plugins-load nagios-plugins-procs nagios-plugins-swap nagios-plugins-users nrpe -y
 
     - name: Copying configuration file
