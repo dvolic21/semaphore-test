@@ -12,7 +12,7 @@
 
     - name: Copying configuration file
       copy: 
-         src: /root/nrpe.cfg
+         src: ~/nrpe.cfg
          dest: /etc/nagios/nrpe.cfg
 
     - name: Enabling NRPE service
