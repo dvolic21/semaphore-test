@@ -1,5 +1,5 @@
 ---
-- name: Installation of NRPE and Centreon enrollment
+- name: SSH Key Copying, installation of NRPE and Centreon enrollment
   hosts: testing-machine
   vars_files:
     - creds.yml
