@@ -4,16 +4,6 @@
   vars_files:
     - creds.yml
   tasks:
-    - name: Ensure SSH key exists
-      stat:
-        path: /root/.ssh/id_rsa.pub
-      register: ssh_key
-
-    - name: Copy SSH key to remote hosts
-      become: yes
-      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ inventory_hostname }}
-      delegate_to: localhost
-  
     - name: Installing EPEL RPM
       command: dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 
