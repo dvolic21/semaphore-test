@@ -10,7 +10,6 @@
       register: ssh_key
 
     - name: Copy SSH key to remote hosts
-      become: yes
       shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ inventory_hostname }}
       delegate_to: localhost
 
