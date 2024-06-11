@@ -6,8 +6,9 @@
   tasks:
     - name: Ensure SSH key exists
       stat:
-        path: ~/.ssh/id_rsa.pub
+        path: /root/.ssh/id_rsa.pub
       register: ssh_key
+      delegate_to: localhost
 
     - name: Copy SSH key to remote hosts
       shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ inventory_hostname }}
