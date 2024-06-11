@@ -1,6 +1,6 @@
 ---
 - name: Copy SSH key to remote hosts
-  hosts: all
+  hosts: testing-machine
   gather_facts: no
 
   tasks:
