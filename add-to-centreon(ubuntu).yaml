@@ -1,0 +1,176 @@
+---
+- name: Copy SSH key to remote hosts
+  hosts: testing-machine
+  gather_facts: no
+
+  tasks:
+    - name: Ensure SSH key exists
+      stat:
+        path: /root/.ssh/id_rsa.pub
+      register: ssh_key
+      delegate_to: localhost
+
+    - name: Copy SSH key to remote hosts
+      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ inventory_hostname }}
+      delegate_to: localhost
+
+- name: Installation of NRPE and Centreon enrollment
+  hosts: testing-machine
+  become: yes
+  vars_files:
+    - creds.yml
+  tasks:
+    - name: Installing EPEL RPM
+      command: dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+
+    - name: Installing NRPE
+      command: dnf install nagios-plugins-disk nagios-plugins-load nagios-plugins-procs nagios-plugins-swap nagios-plugins-users nrpe -y
+
+    - name: Copying configuration file
+      copy: 
+         src: /root/nrpe.cfg
+         dest: /etc/nagios/nrpe.cfg
+
+    - name: Enabling NRPE service
+      systemd:
+         name: nrpe
+         enabled: yes
+         state: started
+      
+    - name: Authentication
+      uri:
+         method: POST
+         url: "{{ centreon_auth_url }}"
+         body: "username={{ centreon_user }}&password={{ centreon_password }}"
+      register: login
+      delegate_to: localhost
+
+    - set_fact:
+        auth_token: "{{ login.json.authToken }}"
+
+    - debug:
+        var: auth_token
+
+    - name: Add host to Centreon configuration
+      uri:
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          centreon-auth-token: "{{ auth_token }}"
+        url: "{{ centreon_api_url }}"
+        body_format: json
+        body:
+          action: "add"
+          object: "host"
+          values: "{{ item }};{{ item }};{{ hostvars[item]['ansible_host'] }};custom-linux-server-verso;central;linux-servers"
+      delegate_to: localhost
+      loop: "{{ groups['testing-machine'] }}"
+
+    - name: Add Current Users service
+      uri:
+        method: POST
+        headers: 
+          Content-Type: "application/json"
+          centreon-auth-token: "{{ auth_token }}"
+        url: "{{ centreon_api_url }}"
+        body_format: json        
+        body:
+          action: "add"
+          object: "service"
+          values: "{{ inventory_hostname }};Current Users;Linux - Users"
+      delegate_to: localhost
+      
+    - name: Add Load Avarage service
+      uri:
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          centreon-auth-token: "{{ auth_token }}"
+        url: "{{ centreon_api_url }}"
+        body_format: json
+        body:
+          action: "add"
+          object: "service"
+          values: "{{ inventory_hostname }};Load Avarage;Linux - Load Avarage"
+      delegate_to: localhost
+
+    - name: Add PING service
+      uri:
+        method: POST
+        headers: 
+          Content-Type: "application/json"
+          centreon-auth-token: "{{ auth_token }}"
+        url: "{{ centreon_api_url }}"
+        body_format: json
+        body:
+          action: "add"
+          object: "service"
+          values: "{{ inventory_hostname  }};PING;Base-Ping-LAN-custom"
+      delegate_to: localhost
+
+    - name: Add Swap Usage service
+      uri:
+       method: POST
+       headers:
+         Content-Type: "application/json"
+         centreon-auth-token: "{{ auth_token }}"
+       url: "{{ centreon_api_url }}"
+       body_format: json
+       body:
+         action: "add"
+         object: "service"
+         values: "{{ inventory_hostname }};Swap Usage;Linux - Swap Usage"
+      delegate_to: localhost
+
+    - name: Add Total Processes service
+      uri:
+       method: POST
+       headers:
+         Content-Type: "application/json"
+         centreon-auth-token: "{{ auth_token }}"
+       url: "{{ centreon_api_url }}"
+       body_format: json
+       body:
+         action: "add"
+         object: "service"
+         values: "{{ inventory_hostname }};Total Processes;Linux - Total Processes"
+      delegate_to: localhost
+
+    - name: Add Zombie Processes service
+      uri:
+       method: POST
+       headers:
+         Content-Type: "application/json"
+         centreon-auth-token: "{{ auth_token }}"
+       url: "{{ centreon_api_url }}"
+       body_format: json
+       body:
+         action: "add"
+         object: "service"
+         values: "{{ inventory_hostname }};Zombie Processes;Linux - Zombie Processes"
+      delegate_to: localhost
+
+    - name: Add Partition services
+      uri:
+       method: POST
+       headers:
+         Content-Type: "application/json"
+         centreon-auth-token: "{{ auth_token }}"
+       url: "{{ centreon_api_url }}"
+       body_format: json
+       body:
+         action: "add"
+         object: "service"
+         values: "{{ inventory_hostname }};Part. {{ item.mount }};Linux - Part. {{ item.mount }}"
+      delegate_to: localhost
+      with_items:
+        - "{{ ansible_mounts }}"
+
+    - name: Apply configuration to Centreon
+      shell: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
+      delegate_to: lxp-centreon19.srv-lx.vag.local
+      register: output
+
+    - name: Print poller messages
+      debug:
+        msg: "{{ output.stdout_lines }}"
