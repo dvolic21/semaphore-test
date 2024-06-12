@@ -28,6 +28,8 @@
         disable_gpg_check: yes
         installroot: /
         enablerepo: epel
+      vars:
+        use_backend: yum
 
     - name: Installing NRPE
       command: yum install nagios-plugins-disk nagios-plugins-load nagios-plugins-procs nagios-plugins-swap nagios-plugins-users nrpe -y
