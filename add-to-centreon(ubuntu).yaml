@@ -21,16 +21,11 @@
     - creds.yml
   tasks:
     - name: Installing EPEL RPM
-      yum:
+      dnf:
         name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
         state: present
-        update_cache: yes
-        disable_gpg_check: yes
-        installroot: /
         enablerepo: epel
-      vars:
-        use_backend: yum
-
+        
     - name: Installing NRPE
       command: yum install nagios-plugins-disk nagios-plugins-load nagios-plugins-procs nagios-plugins-swap nagios-plugins-users nrpe -y
 
