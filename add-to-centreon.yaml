@@ -42,7 +42,6 @@
          method: POST
          url: "{{ centreon_auth_url }}"
          body: "username={{ centreon_user }}&password={{ centreon_password }}"
-         follow_redirects: true
       register: login
       delegate_to: localhost
 
