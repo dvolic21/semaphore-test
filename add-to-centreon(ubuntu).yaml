@@ -20,26 +20,19 @@
   vars_files:
     - creds.yml
   tasks:
-    - name: Installing EPEL RPM
-      dnf:
-        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-        state: present
-        enablerepo: epel
-        
-    - name: Installing NRPE
-      command: yum install nagios-plugins-disk nagios-plugins-load nagios-plugins-procs nagios-plugins-swap nagios-plugins-users nrpe -y
+    - name: Installing Nagios-NRPE-Server
+      apt:
+        name: nagios-nrpe-server
+
+    - name: Installing Nagios Plugins
+      apt:
+        name: nagios-plugins
 
     - name: Copying configuration file
       copy: 
-         src: /root/nrpe.cfg
+         src: /root/ubuntu/nrpe.cfg
          dest: /etc/nagios/nrpe.cfg
 
-    - name: Enabling NRPE service
-      systemd:
-         name: nrpe
-         enabled: yes
-         state: started
-      
     - name: Authentication
       uri:
          method: POST
