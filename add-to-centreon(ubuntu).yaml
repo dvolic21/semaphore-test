@@ -37,7 +37,15 @@
       file:
         path: /var/run/nrpe
         state: directory
+        
+    - name: Copying configuration file
+      copy: 
+        src: /root/nrpe.pid
+        dest: /var/run/nrpe/nrpe.pid
 
+    - name: Restarting Nagios-NRPE-Service
+      command: systemctl restart nagios-nrpe-server
+        
     - name: Authentication
       uri:
          method: POST
