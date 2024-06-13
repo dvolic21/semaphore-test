@@ -47,8 +47,13 @@
         src: /root/nrpe.pid
         dest: /var/run/nrpe/nrpe.pid
 
-    - name: Changing privileges for pid file
-      command: chmod 777 /var/run/nrpe/nrpe.pid
+    - name: Changing owner of NRPE folder
+      become: yes
+      command: chown nagios:nagios /var/run/nrpe
+    
+    - name: Changing owner of pid file
+      become: yes
+      command: chown nagios:nagios /var/run/nrpe/nrpe.pid
 
     - name: Opening port 5666 for communication
       become: yes
