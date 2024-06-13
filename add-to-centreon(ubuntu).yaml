@@ -47,16 +47,21 @@
         src: /root/nrpe.pid
         dest: /var/run/nrpe/nrpe.pid
 
+    - name: Copying check_cpu_temp script
+      copy:
+        src: /root/ubuntu/check_cpu_temp
+        dest: /usr/lib/nagios/plugins
+
+    - name: Adding privileges to script
+      command: chmod +x /usr/lib/nagios/plugins/check_cpu_temp
+
     - name: Changing owner of NRPE folder
-      become: yes
       command: chown nagios:nagios /var/run/nrpe
     
     - name: Changing owner of pid file
-      become: yes
       command: chown nagios:nagios /var/run/nrpe/nrpe.pid
 
     - name: Opening port 5666 for communication
-      become: yes
       command: ufw allow 5666
 
     - name: Restarting Nagios-NRPE-Service
