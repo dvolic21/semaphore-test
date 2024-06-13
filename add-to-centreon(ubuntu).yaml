@@ -50,6 +50,10 @@
     - name: Changing privileges for pid file
       command: chmod 777 /var/run/nrpe/nrpe.pid
 
+    - name: Opening port 5666 for communication
+      become: yes
+      command: ufw allow 5666
+
     - name: Restarting Nagios-NRPE-Service
       command: systemctl restart nagios-nrpe-server
         
