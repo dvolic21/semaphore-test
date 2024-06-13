@@ -28,6 +28,10 @@
       apt:
         name: nagios-plugins
 
+    - name: Installing lm-sensors
+      apt:
+        name: lm-sensors
+
     - name: Copying configuration file
       copy: 
          src: /root/ubuntu/nrpe.cfg
@@ -38,10 +42,13 @@
         path: /var/run/nrpe
         state: directory
         
-    - name: Copying configuration file
+    - name: Copying pid file
       copy: 
         src: /root/nrpe.pid
         dest: /var/run/nrpe/nrpe.pid
+
+    - name: Changing privileges for pid file
+      command: chmod 777 /var/run/nrpe/nrpe.pid
 
     - name: Restarting Nagios-NRPE-Service
       command: systemctl restart nagios-nrpe-server
