@@ -33,6 +33,11 @@
          src: /root/ubuntu/nrpe.cfg
          dest: /etc/nagios/nrpe.cfg
 
+    - name: Creating NRPE folder
+      file:
+        path: /var/run/nrpe
+        state: directory
+
     - name: Authentication
       uri:
          method: POST
