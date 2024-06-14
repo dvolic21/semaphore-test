@@ -32,8 +32,8 @@
       apt:
         name: lm-sensors
 
-    - name: Enabling lm-sensors
-      command: systemctl enable lm-sensors
+    - name: Starting lm-sensors
+      command: systemctl start lm-sensors
 
     - name: Copying configuration file
       copy: 
