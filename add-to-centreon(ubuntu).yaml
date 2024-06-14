@@ -32,6 +32,9 @@
       apt:
         name: lm-sensors
 
+    - name: Enabling lm-sensors
+      command: systemctl enable lm-sensors
+
     - name: Copying configuration file
       copy: 
          src: /root/ubuntu/nrpe.cfg
