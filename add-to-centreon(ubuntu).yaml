@@ -48,7 +48,7 @@
     - name: Copying check_cpu_temp script
       copy:
         src: /root/ubuntu/check_cpu_temp
-        dest: /usr/lib/nagios/plugins
+        dest: /usr/lib/nagios/plugins/check_cpu_temp
 
     - name: Adding privileges to script
       command: chmod +x /usr/lib/nagios/plugins/check_cpu_temp
