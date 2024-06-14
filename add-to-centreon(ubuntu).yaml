@@ -42,10 +42,8 @@
         path: /var/run/nrpe
         state: directory
         
-    - name: Copying pid file
-      copy: 
-        src: /root/nrpe.pid
-        dest: /var/run/nrpe/nrpe.pid
+    - name: Creating pid file
+      command: touch /var/run/nrpe/nrpe.pid
 
     - name: Copying check_cpu_temp script
       copy:
