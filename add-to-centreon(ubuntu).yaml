@@ -16,7 +16,6 @@
 
 - name: Installation of NRPE and Centreon enrollment
   hosts: testing-machine
-  become: yes
   vars_files:
     - creds.yml
   tasks:
