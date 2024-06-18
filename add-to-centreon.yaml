@@ -64,8 +64,7 @@
           object: "host"
           values: "{{ item }};{{ item }};{{ hostvars[item]['ansible_host'] }};custom-linux-server-verso;central;linux-servers"
       delegate_to: localhost
-      loop: "{{ groups['testing-machine'] }}"
-
+      
     - name: Add Current Users service
       uri:
         method: POST
