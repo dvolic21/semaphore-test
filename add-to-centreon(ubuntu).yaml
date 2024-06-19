@@ -77,7 +77,7 @@
       changed_when: port_output.rc != 0
 
     - name: Restarting Nagios-NRPE-Service
-      ansible.builtin.systemd_service:
+      systemd:
          name: nagios-nrpe-server
          state: restart
 
