@@ -79,7 +79,7 @@
     - name: Restarting Nagios-NRPE-Service
       systemd:
          name: nagios-nrpe-server
-         state: restart
+         state: restarted
 
     - name: Authentication
       uri:
