@@ -11,25 +11,29 @@
       delegate_to: localhost
 
     - name: Copy SSH key to remote hosts
-      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ inventory_hostname }}
+      command: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ inventory_hostname }}
+      when: ssh_key.stat.exists
       delegate_to: localhost
 
 - name: Installation of NRPE and Centreon enrollment
   hosts: testing-machine
   become: yes
-  vars_files:
-    - creds.yml
   tasks:
     - name: Installing EPEL RPM
       command: dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+      register: epel_output
+      changed_when: epel_output.rc != 0
 
     - name: Installing NRPE
       command: dnf install nagios-plugins-disk nagios-plugins-load nagios-plugins-procs nagios-plugins-swap nagios-plugins-users nrpe -y
+      register: nrpe_output
+      changed_when: nrpe_output.rc != 0
 
     - name: Copying configuration file
       copy: 
          src: /root/nrpe.cfg
          dest: /etc/nagios/nrpe.cfg
+         mode: '0644'
 
     - name: Enabling NRPE service
       systemd:
@@ -45,11 +49,9 @@
       register: login
       delegate_to: localhost
 
-    - set_fact:
+    - name: Setting authentication token
+      set_fact:
         auth_token: "{{ login.json.authToken }}"
-
-    - debug:
-        var: auth_token
 
     - name: Add host to Centreon configuration
       uri:
@@ -64,7 +66,8 @@
           object: "host"
           values: "{{ item }};{{ item }};{{ hostvars[item]['ansible_host'] }};custom-linux-server-verso;central;linux-servers"
       delegate_to: localhost
-      
+      loop: "{{ groups['testing-machine'] }}"
+
     - name: Add Current Users service
       uri:
         method: POST
@@ -166,9 +169,10 @@
         - "{{ ansible_mounts }}"
 
     - name: Apply configuration to Centreon
-      shell: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
+      command: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
       delegate_to: lxp-centreon19.srv-lx.vag.local
-      register: output
+      register: applyconf_output
+      changed_when: applyconfg_output.rc != 0
 
     - name: Print poller messages
       debug:
