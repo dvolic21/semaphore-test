@@ -12,8 +12,8 @@
 
     - name: Copy SSH key to remote hosts
       command: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ ansible_host }}
+      changed: ssh_key.stat.exists
       delegate_to: localhost
-      changed_when: ssh_key.rc != 0
 
 - name: Installation of NRPE and Centreon enrollment
   hosts: testing-machine
