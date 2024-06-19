@@ -216,4 +216,4 @@
 
     - name: Print poller messages
       debug:
-        msg: "{{ output.stdout_lines }}"
+        msg: "{{ applyconf_output.stdout_lines }}"
