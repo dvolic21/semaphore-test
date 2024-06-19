@@ -11,7 +11,8 @@
       delegate_to: localhost
 
     - name: Copy SSH key to remote hosts
-      shell: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ ansible_host }}
+      command: sshpass -p "{{ ansible_ssh_pass }}" ssh-copy-id -i /root/.ssh/id_rsa.pub {{ ansible_user }}@{{ ansible_host }}
+      changed_when: ssh_key.rc != 0
       delegate_to: localhost
 
 - name: Installation of NRPE and Centreon enrollment
@@ -32,42 +33,54 @@
       apt:
         name: lm-sensors
 
-    - name: Starting lm-sensors
-      command: systemctl start lm-sensors
-
     - name: Copying configuration file
       copy: 
-         src: /root/ubuntu/nrpe.cfg
-         dest: /etc/nagios/nrpe.cfg
+        src: /root/ubuntu/nrpe.cfg
+        dest: /etc/nagios/nrpe.cfg
+        mode: '0644' 
 
     - name: Creating NRPE folder
       file:
         path: /var/run/nrpe
         state: directory
+        mode: '0755'
         
     - name: Creating pid file
       command: touch /var/run/nrpe/nrpe.pid
+      register: createpid_output
+      changed_when: createpid_output.rc != 0
 
     - name: Copying check_cpu_temp script
       copy:
         src: /root/ubuntu/check_cpu_temp
         dest: /usr/lib/nagios/plugins/check_cpu_temp
+        mode: '0644'
 
     - name: Adding privileges to script
-      command: chmod +x /usr/lib/nagios/plugins/check_cpu_temp
+      file: dest=/usr/lib/nagios/plugins/check_cpu_temp mode=a+x
 
     - name: Changing owner of NRPE folder
-      command: chown nagios:nagios /var/run/nrpe
-    
+      file:
+         path: /var/run/nrpe
+         owner: nagios
+         group: nagios
+
     - name: Changing owner of pid file
-      command: chown nagios:nagios /var/run/nrpe/nrpe.pid
+      file:
+         path: /var/run/nrpe/nrpe.pid
+         owner: nagios
+         group: nagios
 
     - name: Opening port 5666 for communication
       command: ufw allow 5666
+      register: port_output
+      changed_when: port_output.rc != 0
 
     - name: Restarting Nagios-NRPE-Service
-      command: systemctl restart nagios-nrpe-server
-        
+      ansible.builtin.systemd_service:
+         name: nagios-nrpe-server
+         state: restart
+
     - name: Authentication
       uri:
          method: POST
@@ -76,11 +89,9 @@
       register: login
       delegate_to: localhost
 
-    - set_fact:
+    - name: Setting authentication token for later use
+      set_fact:
         auth_token: "{{ login.json.authToken }}"
-
-    - debug:
-        var: auth_token
 
     - name: Add host to Centreon configuration
       uri:
@@ -198,9 +209,10 @@
         - "{{ ansible_mounts }}"
 
     - name: Apply configuration to Centreon
-      shell: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
+      command: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
       delegate_to: lxp-centreon19.srv-lx.vag.local
-      register: output
+      register: applyconf_output
+      changed_when: applyconf_output.rc != 0
 
     - name: Print poller messages
       debug:
