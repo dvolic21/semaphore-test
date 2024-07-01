@@ -172,8 +172,8 @@
       command: "centreon -u {{ centreon_user }} -p {{ centreon_password }} -a APPLYCFG -v 1"
       delegate_to: lxp-centreon19.srv-lx.vag.local
       register: applyconf_output
-      changed_when: applyconfg_output.rc != 0
+      changed_when: applyconf_output.rc != 0
 
     - name: Print poller messages
       debug:
-        msg: "{{ output.stdout_lines }}"
+        msg: "{{ applyconf_output.stdout_lines }}"
