@@ -1,10 +1,6 @@
 - name: Run Python script from GitHub
   hosts: your_hosts  # Replace with your actual hosts
   tasks:
-    - name: Display current local_tmp setting
-      debug:
-        msg: "Current local_tmp is set to: {{ ansible_env.ANSIBLE_LOCAL_TMP | default('not set') }}"
-
     - name: Download the Python script
       get_url:
         url: 'https://raw.githubusercontent.com/dvolic21/semaphore-test/main/testing.py'
