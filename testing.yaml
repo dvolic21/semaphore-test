@@ -1,0 +1,15 @@
+- name: Run Simple Python Script
+  hosts: your_hosts  # Replace with your target hosts
+  tasks:
+    - name: Copy Python script to remote host
+      copy:
+        src: /path/to/simple_script.py  # Adjust this to the local path of the script
+        dest: /tmp/simple_script.py
+
+    - name: Run the Python script
+      command: python /tmp/simple_script.py
+      register: script_output
+
+    - name: Display the output
+      debug:
+        msg: "{{ script_output.stdout }}"
