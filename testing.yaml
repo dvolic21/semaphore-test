@@ -3,7 +3,7 @@
   tasks:
     - name: Download the Python script
       get_url:
-        url: 'https://raw.githubusercontent.com/dvolic21/semaphore-test/main/testing.py'
+        url: 'https://github.com/dvolic21/semaphore-test/blob/main/testing.py'
         dest: '/ansible_tmp/testing.py'
 
     - name: Run the Python script
