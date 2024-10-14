@@ -1,13 +1,13 @@
-- name: Run Simple Python Script
-  hosts: your_hosts  # Replace with your target hosts
+- name: Run Python script from GitHub
+  hosts: your_hosts  # Replace with your actual hosts
   tasks:
-    - name: Copy Python script to remote host
-      copy:
-        src: /path/to/simple_script.py  # Adjust this to the local path of the script
-        dest: /tmp/simple_script.py
+    - name: Download the Python script
+      get_url:
+        url: 'https://raw.githubusercontent.com/dvolic21/semaphore-test/main/testing.py'
+        dest: '/tmp/testing.py'  # Path to save the script on the target host
 
     - name: Run the Python script
-      command: python /tmp/simple_script.py
+      command: python /tmp/testing.py  # Adjust to python3 if necessary
       register: script_output
 
     - name: Display the output
