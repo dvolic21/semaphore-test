@@ -1,13 +1,13 @@
 - name: Run Python script from GitHub
-  hosts: your_hosts  # Replace with your actual hosts
+  hosts: localhost
   tasks:
     - name: Download the Python script
       get_url:
-        url: 'https://github.com/dvolic21/semaphore-test/blob/main/testing.py'
-        dest: '/ansible_tmp/testing.py'
+        url: https://raw.githubusercontent.com/dvolic21/semaphore-test/main/testing.py
+        dest: '~/ansible_tmp/testing.py'
 
     - name: Run the Python script
-      command: python /ansible_tmp/testing.py
+      command: python ~/ansible_tmp/testing.py
       register: script_output
 
     - name: Display the output
