@@ -4,10 +4,10 @@
     - name: Download the Python script
       get_url:
         url: 'https://raw.githubusercontent.com/dvolic21/semaphore-test/main/testing.py'
-        dest: '/ansible_tmp/testing.py'  # Path to save the script on the target host
+        dest: '/ansible_tmp/testing.py'
 
     - name: Run the Python script
-      command: python /ansible_tmp/testing.py  # Adjust to python3 if necessary
+      command: python /ansible_tmp/testing.py
       register: script_output
 
     - name: Display the output
