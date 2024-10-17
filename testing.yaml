@@ -12,4 +12,4 @@
 
     - name: Display the output
       debug:
-        msg: "{{ script_output.stdout }}"
+        msg: "{{ script_output.stdout_lines }}"
