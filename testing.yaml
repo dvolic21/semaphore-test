@@ -1,57 +1,15 @@
----
-- name: Ansible Playbook Example with and without to_nice_yaml
+- name: Run Python script from GitHub
   hosts: localhost
-  gather_facts: yes
   tasks:
-
-    - name: Run a shell command and register output
-      shell: |
-        echo "First line"
-        echo "Second line"
-        echo "Third line"
-      register: command_output
-
-    - name: Display raw output without to_nice_yaml
+    - name: Download the Python script
+      get_url:
+        url: https://raw.githubusercontent.com/dvolic21/semaphore-test/main/testing.py
+        dest: '~/ansible_tmp/testing.py'
+ 
+    - name: Run the Python script
+      command: python ~/ansible_tmp/testing.py
+      register: script_output
+ 
+    - name: Display the output
       debug:
-        msg: "{{ command_output.stdout_lines }}"
-
-    - name: Display output using to_nice_yaml without FQCN (for demonstration only)
-      debug:
-        msg: "{{ command_output.stdout_lines | to_nice_yaml }}"
-
-    - name: Display output using to_nice_yaml with FQCN (best practice)
-      debug:
-        msg: "{{ command_output.stdout_lines | ansible.builtin.to_nice_yaml }}"
-      
-    - name: Gather and display Ansible facts without formatting
-      debug:
-        var: ansible_facts
-
-    - name: Gather and display Ansible facts formatted using to_nice_yaml with FQCN
-      debug:
-        msg: "{{ ansible_facts | ansible.builtin.to_nice_yaml }}"
-    
-    - name: Display a structured data (list) without to_nice_yaml
-      debug:
-        msg: 
-          - "Item 1"
-          - "Item 2"
-          - "Item 3"
-    
-    - name: Display structured data (list) using to_nice_yaml with FQCN
-      debug:
-        msg: "{{ ['Item 1', 'Item 2', 'Item 3'] | ansible.builtin.to_nice_yaml }}"
-
-    - name: Run a long command and register output for comparison
-      shell: |
-        for i in {1..10}; do echo "Line $i"; done
-      register: long_command_output
-
-    - name: Display long output without to_nice_yaml formatting
-      debug:
-        msg: "{{ long_command_output.stdout_lines }}"
-    
-    - name: Display long output using to_nice_yaml with FQCN
-      debug:
-        msg: "{{ long_command_output.stdout_lines | ansible.builtin.to_nice_yaml }}"
-
+        msg: "{{ script_output.stdout |  ansible.builtin.to_nice_yaml }}"
